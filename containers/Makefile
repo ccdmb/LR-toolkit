@@ -43,7 +43,3 @@ docker/ont-tools: ont-tools.Dockerfile env.yml
 	  .
 	@mkdir -p "$(dir $@)"
 	@touch $@
-
-
-
-
