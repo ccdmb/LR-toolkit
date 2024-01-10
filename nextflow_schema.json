@@ -76,21 +76,38 @@
     "input_barcodes": {
       "type": "string",
       "default": "test",
+      "description": "Directory with barcodes subdirectories (mydir/barcodes*)"
     },
     "workflow": {
       "type": "string",
       "default": "concatenate",
-      "enum": ["concatenate", "reads-qc", "chloroplast-contamination"]
+      "description": "Tupe of workflow to run",
+      "enum": ["concatenate", "reads-qc", "chloroplast-contamination", "genome-mapping"]
     },
     "output_dir": {
       "type": "string",
-      "description": "Output directory",
+      "description": "Output directory for run",
       "default": "results"
     },
     "input_fastq": {
-    "type": "string",
-    "description": "Input fastq directory",
-    "default": "reads"
+      "type": "string",
+      "description": "Input directory with fastq files to process",
+      "default": "reads"
+    },
+    "genome_chl": {
+      "type": "string",
+      "description": "Input chloroplast genome for contamination screening",
+      "default": null
+    },
+    "genome_nuc": {
+      "type": "string",
+      "description": "Input nuclear genome for reads mapping",
+      "default": null
+    },
+    "genes": {
+      "type": "string",
+      "description": "Input genes, same reference as nuclear genome for reads mapping",
+      "default": null
     }
   }
 }

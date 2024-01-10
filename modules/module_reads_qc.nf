@@ -32,7 +32,7 @@ process run_multiqc_reads {
     path(dir)
     
     output:
-    tuple path("multiqc_report.html"), path("multiqc_data"), emit: multiQC
+    path("multiqc_data"), emit: multiQC
     
     script:
     """

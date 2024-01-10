@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-barcodes_dir           = params.barcodes_dir
+barcodes_dir           = params.input_barcodes
 outdir                 = params.output_dir
 
 process concat_barcoded {
