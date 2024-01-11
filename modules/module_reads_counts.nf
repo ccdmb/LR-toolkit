@@ -21,11 +21,11 @@ process run_feature_counts {
     output:
     tuple val(sample_id), path("${sample_id}_counts"), emit: counts
     tuple val(sample_id), path("${sample_id}_counts.summary"), emit: summary
-    tuple val(sample_id), path("${sample_id}_counts.jcounts"), emit: jcounts
 
     script:
     """
     featureCounts \
+	-L \
         -G ${genome} \
         -a ${genes} \
         -T ${task.cpus} \
