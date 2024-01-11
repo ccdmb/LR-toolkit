@@ -5,6 +5,96 @@
   "description": "ONT pipeline for reads QC and mapping.",
   "type": "object",
   "definitions": {
+    "generic_options": {
+      "title": "Generic options",
+      "type": "object",
+      "fa_icon": "fas fa-file-import",
+      "description": "Less common options for the pipeline, typically set in a config file.",
+      "help_text": "These options are common to all nf-core pipelines and allow you to customise some of the core preferences for how the pipeline runs.\n\nTypically these options would be set in a Nextflow config file loaded for all pipeline runs, such as `~/.nextflow/config`.",
+      "properties": {
+        "workflow": {
+          "type": "string",
+          "description": "Type of analysis to be run",
+          "enum": [
+            "concatenate",
+            "reads-qc",
+            "reads-filter",
+            "chloroplast-contamination",
+            "genome-mapping",
+            "isoform-analysis"
+          ]
+        },
+        "help": {
+          "type": "boolean",
+          "description": "Display help text.",
+          "fa_icon": "fas fa-question-circle",
+          "hidden": true
+        },
+        "max_cpus": {
+          "type": "integer",
+          "hidden": true,
+          "default": 8,
+          "description": "Maximum number of cpus to use"
+        },
+        "max_memory": {
+          "type": "string",
+          "description": "Maximum memory to use",
+          "default": "2.GB",
+          "hidden": true
+        }
+      }
+    },
+    "input_output": {
+      "title": "Input/output",
+      "type": "object",
+      "description": "Parameters for input/output directories",
+      "default": "",
+      "properties": {
+        "input_dir": {
+          "type": "string",
+          "description": "Input directory containing samples to process"
+        },
+        "output_dir": {
+          "type": "string",
+          "description": "Output directory where the results will be written"
+        }
+      }
+    },
+    "reference_genomes": {
+      "title": "Reference genomes",
+      "type": "object",
+      "description": "Files containing reference files for analysis",
+      "default": "",
+      "properties": {
+        "genome_chl": {
+          "type": "string",
+          "description": "Chloroplast genome (small file)"
+        },
+        "genome_nuc": {
+          "type": "string",
+          "description": "Nuclear genome"
+        },
+        "genes": {
+          "type": "string",
+          "description": "Genes in gtf format",
+          "pattern": ".gtf",
+          "format": "file-path"
+        }
+      }
+    },
+    "filtering_parameters": {
+      "title": "Filtering parameters",
+      "type": "object",
+      "description": "Reads features used for filtering",
+      "default": "",
+      "properties": {
+        "phred_score": {
+          "type": "integer",
+          "description": "Phres score used to exclude reads",
+          "default": 7
+        }
+      }
+    },
     "institutional_config_options": {
       "title": "Institutional config options",
       "type": "object",
@@ -21,103 +111,23 @@
           "fa_icon": "fas fa-users-cog"
         }
       }
-    },
-     "max_job_request_options": {
-      "title": "Max job request options",
-      "type": "object",
-      "fa_icon": "fab fa-acquisitions-incorporated",
-      "description": "Set the top limit for requested resources for any single job.",
-      "help_text": "If you are running on a smaller system, a pipeline step requesting more resources than are available may cause the Nextflow to stop the run with an error. These options allow you to cap the maximum resources requested by any single job so that the pipeline will run on your system.\n\nNote that you can not _increase_ the resources requested by any job using these options. For that you will need your own configuration file. See [the nf-core website](https://nf-co.re/usage/configuration) for details.",
-      "properties": {
-        "max_cpus": {
-          "type": "integer",
-          "description": "Maximum number of CPUs that can be requested for any single job.",
-          "default": 4,
-          "fa_icon": "fas fa-microchip",
-          "hidden": true,
-          "help_text": "Use to set an upper-limit for the CPU requirement for each process. Should be an integer e.g. `--max_cpus 1`"
-        },
-        "max_memory": {
-          "type": "string",
-          "description": "Maximum amount of memory that can be requested for any single job.",
-          "default": "2.GB",
-          "fa_icon": "fas fa-memory",
-          "pattern": "^\\d+(\\.\\d+)?\\.?\\s*(K|M|G|T)?B$",
-          "hidden": true,
-          "help_text": "Use to set an upper-limit for the memory requirement for each process. Should be a string in the format integer-unit e.g. `--max_memory '8.GB'`"
-        }
-      }
-    },
-    "generic_options": {
-      "title": "Generic options",
-      "type": "object",
-      "fa_icon": "fas fa-file-import",
-      "description": "Less common options for the pipeline, typically set in a config file.",
-      "help_text": "These options are common to all nf-core pipelines and allow you to customise some of the core preferences for how the pipeline runs.\n\nTypically these options would be set in a Nextflow config file loaded for all pipeline runs, such as `~/.nextflow/config`.",
-      "properties": {
-        "help": {
-          "type": "boolean",
-          "description": "Display help text.",
-          "fa_icon": "fas fa-question-circle",
-          "hidden": true
-        }
-      }
     }
   },
   "allOf": [
     {
-      "$ref": "#/definitions/institutional_config_options"
+      "$ref": "#/definitions/generic_options"
     },
     {
-      "$ref": "#/definitions/generic_options"
+      "$ref": "#/definitions/input_output"
+    },
+    {
+      "$ref": "#/definitions/reference_genomes"
+    },
+    {
+      "$ref": "#/definitions/filtering_parameters"
+    },
+    {
+      "$ref": "#/definitions/institutional_config_options"
     }
-  ],
-  "properties": {
-    "workflow": {
-      "type": "string",
-      "default": "concatenate",
-      "description": "Tupe of workflow to run",
-      "enum": ["concatenate", "reads-qc", "reads-filter", "chloroplast-contamination", "genome-mapping", "isoform-analysis"]
-    },
-    "input_barcodes": {
-      "type": "string",
-      "default": "test",
-      "description": "Directory with barcodes subdirectories (mydir/barcodes*)"
-    },
-    "input_fastq": {
-      "type": "string",
-      "description": "Input directory with fastq files to process",
-      "default": "reads"
-    },
-    "input_bam": {
-      "type": "string",
-      "description": "Input directory with bam files to analyze",
-      "default": "bams"
-    },
-    "output_dir": {
-      "type": "string",
-      "description": "Output directory for run",
-      "default": "results"
-    },
-    "phred_score": {
-      "type": "integer",
-      "description": "Phred score for reads filtering",
-      "default": 7
-    },
-    "genome_chl": {
-      "type": "string",
-      "description": "Input chloroplast genome for contamination screening",
-      "default": null
-    },
-    "genome_nuc": {
-      "type": "string",
-      "description": "Input nuclear genome for reads mapping",
-      "default": null
-    },
-    "genes": {
-      "type": "string",
-      "description": "Input genes, same reference as nuclear genome for reads mapping",
-      "default": null
-    }
-  }
+  ]
 }

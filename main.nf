@@ -7,9 +7,7 @@ ver="ont-tools:v0.0.1"
 
 params.help                  = null
 
-params.input_barcodes        = "test"
-params.input_fastq           = "reads"
-params.input_bam             = "bams"
+params.input_dir             = null
 
 params.genome_chl            = null
 params.genome_nuc            = null
@@ -38,19 +36,18 @@ validateParameters()
 log.info paramsSummaryLog(workflow)
 
 workflow_input = params.workflow
-println(workflow_input)
 
 switch (workflow_input) {
     case ["concatenate"]:
         include { concat_barcoded } from './modules/module_manage_files.nf'
-	barcodes = params.input_barcodes
+	barcodes = params.input_dir
 	barcodes = Channel.fromPath("${barcodes}", type:'dir', checkIfExists: true)
 		.map {[ it.name, it ]}
 	break;
     case ["reads-qc", "reads-filter"]:
 	include { run_fastqc; run_multiqc_reads; get_stats_reads } from './modules/module_reads_qc.nf'
 	include { filter_reads  } from './modules/module_reads_filtering.nf'
-	reads = params.input_fastq
+	reads = params.input_dir
 	phred = params.phred_score
 	reads = Channel.fromPath("${reads}", checkIfExists: true)
 		.map {[ it.simpleName, it ]}
@@ -58,7 +55,7 @@ switch (workflow_input) {
     case ["chloroplast-contamination"]:
 	include { minimap_mapping_chlo } from './modules/module_reads_mapping.nf'
 	include { stats_mapping ; run_multiqc_stats } from './modules/module_mapping_stats.nf'
-	reads = params.input_fastq
+	reads = params.input_dir
 	genome_chl = file(params.genome_chl)
 	reads = Channel.fromPath("${reads}", checkIfExists: true)
                 .map {[ it.simpleName, it ]}
@@ -70,7 +67,7 @@ switch (workflow_input) {
 	genome = file(params.genome_nuc)
 	genome_counts = params.genome_nuc
 	genes = file(params.genes)
-	reads = params.input_fastq
+	reads = params.input_dir
 	genome = Channel.fromPath("${genome}", checkIfExists: true)
                 .map {[ it.simpleName, it ]}
 	reads = Channel.fromPath("${reads}", checkIfExists: true)
@@ -172,7 +169,7 @@ workflow {
 	} else if (workflow_input == "genome-mapping") {
                 switchVariable = 5;
         }
-        println(genome_chl)
+
 	switch (switchVariable) {
 	case 1:
 		CONCAT_BARCODES(barcodes);

@@ -7,7 +7,7 @@ outdir           = params.output_dir
 process filter_reads {
 
     label 'filter_reads'
-    tag { 'filtering reads: ${sample}' }
+    tag { "filtering reads: ${sample}" }
 
     publishDir "${outdir}/filtered_reads/", mode: 'copy', overwrite: true
 

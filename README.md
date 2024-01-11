@@ -3,21 +3,21 @@
 The pipeline performs several analyses that are suitable for barcoded reads.     
 
 ```
-Typical pipeline command:
+Generic options
+  --workflow           [string]  Type of analysis to be run (accepted: concatenate, reads-qc, reads-filter, chloroplast-contamination, genome-mapping,
+                                 isoform-analysis)
 
-  nextflow run ./main.nf ...
+Input/output
+  --input_dir          [string]  Input directory containing samples to process
+  --output_dir         [string]  Output directory where the results will be written
 
-Other parameters
-  --workflow           [string]  Tupe of workflow to run (accepted: concatenate, reads-qc, reads-filter, chloroplast-contamination, genome-mapping,
-                                 isoform-analysis) [default: concatenate]
-  --input_barcodes     [string]  Directory with barcodes subdirectories (mydir/barcodes*) [default: test]
-  --input_fastq        [string]  Input directory with fastq files to process [default: reads]
-  --input_bam          [string]  Input directory with bam files to analyze [default: bams]
-  --output_dir         [string]  Output directory for run [default: results]
-  --phred_score        [integer] Phred score for reads filtering [default: 7]
-  --genome_chl         [string]  Input chloroplast genome for contamination screening
-  --genome_nuc         [string]  Input nuclear genome for reads mapping
-  --genes              [string]  Input genes, same reference as nuclear genome for reads mapping
+Reference genomes
+  --genome_chl         [string]  Chloroplast genome (small file)
+  --genome_nuc         [string]  Nuclear genome
+  --genes              [string]  Genes in gtf format
+
+Filtering parameters
+  --phred_score        [integer] Phres score used to exclude reads [default: 7]
 ``` 
 
 * concatenate: combined multiple ```fastq.gz``` files stored in directory. The name of the final gzip-ed file is the name of the top directory
@@ -30,30 +30,30 @@ Other parameters
 Please use ```test/*``` data to run some examples.    
 Create barcode files:
 ```
-nextflow run ./main.nf \
+nextflow run ccdm/ONT-toolkit -r main \
         -profile local,singularity \
         -resume \
-        --input_barcodes "test/barcode*" \
+        --input_dir "test/barcode*" \
         --workflow "concatenate" \
 	--output_dir "results"
 ```
 
 Perform QC on reads
 ```
-nextflow run ./main.nf \
+nextflow run ccdm/ONT-toolkit -r main \
         -profile local,singularity \
         -resume \
-        --input_fasta "results/concat_barcoded/barcode*" \
+        --input_dir "results/concat_barcoded/barcode*" \
         --workflow "reads-qc" \
         --output_dir "results"
 ```
 
 Check presence of chloroplast sequences      
 ```
-nextflow run ./main.nf \
+nextflow run ccdm/ONT-toolkit -r main \
         -profile local,singularity \
         -resume \
-        --input_fasta "results/concat_barcoded/barcode*" \
+        --input_dir "results/concat_barcoded/barcode*" \
         --workflow "chloroplast-contamination" \
         --output_dir "results" \
 	--genome_chl "/path/to/my/chl/genome.fasta"
@@ -61,13 +61,24 @@ nextflow run ./main.nf \
 
 Map reads to reference genome    
 ```
-nextflow run ./main.nf \
+nextflow run ccdm/ONT-toolkit -r main \
         -profile local,singularity \
         -resume \
-        --input_fasta "results/concat_barcoded/barcode*" \
+        --input_dir "results/concat_barcoded/barcode*" \
         --workflow "genome-mapping" \
         --output_dir "results" \
         --genome_chl "/path/to/my/nucl/genome.fasta" \
 	--genes "/path/to/my/genes/genes.gtf"
 
+```
+
+Filter reads by phred score
+```
+nextflow run ccdm/ONT-toolkit -r main \
+        -profile local,singularity \
+        -resume \
+        --input_dir "results/concat_barcoded/barcode*" \
+        --workflow "reads-filter" \
+        --output_dir "results" \
+	--phred_score 10
 ```
