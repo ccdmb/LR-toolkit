@@ -5,8 +5,9 @@ outdir           = params.output_dir
 workflow         = params.workflow
 
 process minimap_create_index {
+    time '2h'
 
-    label 'minimap'
+    label 'medium_task'
     tag "minimap: create index"
     
     input:
@@ -26,7 +27,9 @@ process minimap_mapping_chlo {
     '''
     Function creates index on the fly and maps reads
     '''
-    label 'minimap'
+    time '12h'
+
+    label 'medium_task'
     tag "minimap mapping: ${sample}"
 
     publishDir "${outdir}/alignements/${workflow}", mode: 'copy'
@@ -51,7 +54,8 @@ process minimap_mapping {
     '''
     Function creates index and maps reads
     '''
-    label 'minimap'
+    time '1d'
+    label 'big_task'
     tag "minimap mapping: ${sample}"
 
     publishDir "${outdir}/alignements/${workflow}", mode: 'copy'

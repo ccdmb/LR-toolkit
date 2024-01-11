@@ -4,8 +4,9 @@ nextflow.enable.dsl=2
 outdir           = params.output_dir
 
 process run_fastqc {
+    time '1h'
 
-    label 'fastqc'
+    label 'small_task'
     tag { "fastqc: ${sample}" }
     
     input:
@@ -22,8 +23,9 @@ process run_fastqc {
 }
 
 process run_multiqc_reads {
+    time '1h'
 
-    label 'multiqc'
+    label 'small_task'
     tag { 'multiqc: all' }
 
     publishDir "${outdir}/reads-qc/", mode: 'copy', overwrite: true
@@ -42,7 +44,7 @@ process run_multiqc_reads {
 
 process get_stats_reads {
 
-   label 'abyssfac'
+   label 'small_task'
    tag { "stats: all" }
    
    publishDir "${outdir}/reads-qc/", mode: 'copy', overwrite: true

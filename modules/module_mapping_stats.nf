@@ -5,8 +5,9 @@ outdir           = params.output_dir
 workflow         = params.workflow
 
 process stats_mapping {
+    time '1d'
 
-    label 'stats_mapping'
+    label 'medium_task'
     tag { 'stats mapping' }
 
     publishDir "${outdir}/alignements/mapping_stats/${workflow}", mode: 'copy', overwrite: true
@@ -27,6 +28,7 @@ process stats_mapping {
 }
 
 process run_multiqc_stats {
+    time '1h'
 
     label 'multiqc'
     tag { 'multiqc: all' }
@@ -44,4 +46,3 @@ process run_multiqc_stats {
     multiqc . --force
     """
 }
-

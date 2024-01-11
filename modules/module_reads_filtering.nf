@@ -5,8 +5,9 @@ outdir           = params.output_dir
 
 
 process filter_reads {
+    time '1d'    
 
-    label 'filter_reads'
+    label 'small_task'
     tag { "filtering reads: ${sample}" }
 
     publishDir "${outdir}/filtered_reads/", mode: 'copy', overwrite: true
@@ -22,6 +23,6 @@ process filter_reads {
     """
     seqkit seq \
 	-Q ${phred} \
-	${reads} | gzip > ${sample}_filt${phred}.fastq.gz  
+	${reads} -o ${sample}_filt${phred}.fastq.gz  
     """
 }

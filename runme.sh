@@ -4,8 +4,7 @@ nextflow run ./main.nf \
 	-profile local,singularity \
 	-resume \
 	--input_dir "results/barcodes_concat/barcode*" \
-	--workflow "chloroplast-contamination" \
-	--genome_chl "/home/kgagalova/NC_056985_chl.fasta" \
+	--workflow "reads-filter" \
 	--output_dir "results" \
 	-with-singularity "containers/singularity/ont-tools.sif"
 

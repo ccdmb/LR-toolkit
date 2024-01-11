@@ -7,8 +7,9 @@ outdir             = params.output_dir
 worflow            = params.workflow
 
 process run_feature_counts {
-    
-    label 'featurecounts'
+    time '1d'    
+
+    label 'medium_task'
     tag { "featureCounts: ${sample_id}" }
     publishDir "${outdir}/alignements/${workflow}/counts/featureCounts/${sample_id}", mode: 'copy', overwrite: true
 

@@ -5,7 +5,9 @@ barcodes_dir           = params.input_dir
 outdir                 = params.output_dir
 
 process concat_barcoded {
+    time '12h'
 
+    label 'small_task'
     tag { "concat barcode: ${barcode}" }
     publishDir "${outdir}/barcodes_concat/", mode: 'copy', overwrite: true
 
