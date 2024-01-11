@@ -73,26 +73,36 @@
     }
   ],
   "properties": {
+    "workflow": {
+      "type": "string",
+      "default": "concatenate",
+      "description": "Tupe of workflow to run",
+      "enum": ["concatenate", "reads-qc", "reads-filter", "chloroplast-contamination", "genome-mapping", "isoform-analysis"]
+    },
     "input_barcodes": {
       "type": "string",
       "default": "test",
       "description": "Directory with barcodes subdirectories (mydir/barcodes*)"
     },
-    "workflow": {
+    "input_fastq": {
       "type": "string",
-      "default": "concatenate",
-      "description": "Tupe of workflow to run",
-      "enum": ["concatenate", "reads-qc", "chloroplast-contamination", "genome-mapping"]
+      "description": "Input directory with fastq files to process",
+      "default": "reads"
+    },
+    "input_bam": {
+      "type": "string",
+      "description": "Input directory with bam files to analyze",
+      "default": "bams"
     },
     "output_dir": {
       "type": "string",
       "description": "Output directory for run",
       "default": "results"
     },
-    "input_fastq": {
-      "type": "string",
-      "description": "Input directory with fastq files to process",
-      "default": "reads"
+    "phred_score": {
+      "type": "integer",
+      "description": "Phred score for reads filtering",
+      "default": 7
     },
     "genome_chl": {
       "type": "string",

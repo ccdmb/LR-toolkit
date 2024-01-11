@@ -2,7 +2,7 @@
 nextflow.enable.dsl=2
 
 outdir           = params.output_dir
-
+workflow         = params.workflow
 
 process minimap_create_index {
 
@@ -22,6 +22,31 @@ process minimap_create_index {
     """
 }
 
+process minimap_mapping_chlo {
+    '''
+    Function creates index on the fly and maps reads
+    '''
+    label 'minimap'
+    tag "minimap mapping: ${sample}"
+
+    publishDir "${outdir}/alignements/${workflow}", mode: 'copy'
+
+    input:
+    path(genome)
+    tuple val(sample), path(reads)
+
+    output:
+    tuple val(sample), path("${sample}.bam"), emit: minimap_align_chlo
+
+    """
+    minimap2 \
+        -ax splice \
+	-t ${task.cpus} \
+        ${genome} \
+        ${reads} | samtools sort -o ${sample}.bam
+    """
+}
+
 process minimap_mapping {
     '''
     Function creates index and maps reads
@@ -29,7 +54,7 @@ process minimap_mapping {
     label 'minimap'
     tag "minimap mapping: ${sample}"
 
-    publishDir "${outdir}/alignements", mode: 'copy'
+    publishDir "${outdir}/alignements/${workflow}", mode: 'copy'
 
     input:
     path(genome)

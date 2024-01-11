@@ -4,13 +4,13 @@ nextflow.enable.dsl=2
 genome             = params.genome
 genes              = params.genes
 outdir             = params.output_dir
-
+worflow            = params.workflow
 
 process run_feature_counts {
     
     label 'featurecounts'
     tag { "featureCounts: ${sample_id}" }
-    publishDir "${outdir}/counts/featureCounts/${sample_id}", mode: 'copy', overwrite: true
+    publishDir "${outdir}/alignements/${workflow}/counts/featureCounts/${sample_id}", mode: 'copy', overwrite: true
 
     input:
     tuple val(sample_id), path(bam)

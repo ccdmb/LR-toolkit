@@ -9,11 +9,14 @@ params.help                  = null
 
 params.input_barcodes        = "test"
 params.input_fastq           = "reads"
+params.input_bam             = "bams"
 
 params.genome_chl            = null
 params.genome_nuc            = null
 
 params.genes                 = null
+
+params.phred_score           = 7
 
 params.output_dir            = "results"
 params.workflow              = "concatenate"
@@ -35,6 +38,7 @@ validateParameters()
 log.info paramsSummaryLog(workflow)
 
 workflow_input = params.workflow
+println(workflow_input)
 
 switch (workflow_input) {
     case ["concatenate"]:
@@ -43,22 +47,26 @@ switch (workflow_input) {
 	barcodes = Channel.fromPath("${barcodes}", type:'dir', checkIfExists: true)
 		.map {[ it.name, it ]}
 	break;
-    case ["reads-qc"]:
-	include { run_fastqc; run_multiqc_reads } from './modules/module_reads_qc.nf'
+    case ["reads-qc", "reads-filter"]:
+	include { run_fastqc; run_multiqc_reads; get_stats_reads } from './modules/module_reads_qc.nf'
+	include { filter_reads  } from './modules/module_reads_filtering.nf'
 	reads = params.input_fastq
+	phred = params.phred_score
 	reads = Channel.fromPath("${reads}", checkIfExists: true)
 		.map {[ it.simpleName, it ]}
 	break;
     case ["chloroplast-contamination"]:
 	include { minimap_mapping_chlo } from './modules/module_reads_mapping.nf'
-	include { stats_mapping; run_multiqc_stats } from './modules/module_mapping_stats.nf'
+	include { stats_mapping ; run_multiqc_stats } from './modules/module_mapping_stats.nf'
 	reads = params.input_fastq
-	genome = file(params.genome_chl)
+	genome_chl = file(params.genome_chl)
 	reads = Channel.fromPath("${reads}", checkIfExists: true)
                 .map {[ it.simpleName, it ]}
+	break;
     case ["genome-mapping"]:
 	include { minimap_mapping;  minimap_create_index } from './modules/module_reads_mapping.nf'
-	include { stats_mapping; run_multiqc_stats } from './modules/module_mapping_stats.nf'
+	include { stats_mapping ; run_multiqc_stats } from './modules/module_mapping_stats.nf'
+	include { run_feature_counts } from './modules/module_reads_counts.nf'
 	genome = file(params.genome_nuc)
 	genome_counts = params.genome_nuc
 	genes = file(params.genes)
@@ -67,6 +75,7 @@ switch (workflow_input) {
                 .map {[ it.simpleName, it ]}
 	reads = Channel.fromPath("${reads}", checkIfExists: true)
                 .map {[ it.simpleName, it ]}
+	break;
     }
 
 workflow CONCAT_BARCODES {
@@ -88,16 +97,30 @@ workflow READS_QC {
         .collect()
         .set { fastqc_out }
     run_multiqc_reads(fastqc_out)
+
+    reads.map { it -> it[1] }
+	.collect()
+	.set { allreads }    
+    get_stats_reads(allreads)
+}
+
+workflow READS_FILTER {
+    take:
+    reads
+    phred
+
+    main:
+    filter_reads(reads, phred)    
 }
 
 workflow CHLO_CONTAMINATION {
     take:
-    genome
+    genome_chl
     reads
 
     main:
-    mapped_out = minimap_mapping_chlo(genome, reads)
-    stats_out = stats_mapping(mapped_out.minimap_align)
+    mapped_out = minimap_mapping_chlo(genome_chl, reads)
+    stats_out = stats_mapping(mapped_out.minimap_align_chlo)
     stats_out.stats
         .map { it -> it[1] }
         .collect()
@@ -142,24 +165,32 @@ workflow {
 		switchVariable = 1;
 	} else if (workflow_input == "reads-qc") {
 		switchVariable = 2;
-	} else if (workflow_input == "chloroplast-contamination") {
+	} else if (workflow_input == "reads-filter") {
 		switchVariable = 3;
+	} else if (workflow_input == "chloroplast-contamination") {
+		switchVariable = 4;
 	} else if (workflow_input == "genome-mapping") {
-                switchVariable = 4;
+                switchVariable = 5;
         }
-
+        println(genome_chl)
 	switch (switchVariable) {
 	case 1:
 		CONCAT_BARCODES(barcodes);
 		break;
 	case 2:
-		READ_QC(reads);
+		READS_QC(reads);
 		break;
 	case 3:
-		CHLO_CONTAMINATION(genome, reads);
-                break;
+		READS_FILTER(reads, phred);
+		break;
 	case 4:
+		CHLO_CONTAMINATION(genome_chl, reads);
+                break;
+	case 5:
 		GENOME_MAPPING(genome, genome_counts, genes, reads);
+		break;
+	default:
+		println("Please provide the correct input options")
 		break;
 	}
 }

@@ -3,22 +3,29 @@
 The pipeline performs several analyses that are suitable for barcoded reads.     
 
 ```
+Typical pipeline command:
+
   nextflow run ./main.nf ...
 
 Other parameters
+  --workflow           [string]  Tupe of workflow to run (accepted: concatenate, reads-qc, reads-filter, chloroplast-contamination, genome-mapping,
+                                 isoform-analysis) [default: concatenate]
   --input_barcodes     [string]  Directory with barcodes subdirectories (mydir/barcodes*) [default: test]
-  --workflow           [string]  Tupe of workflow to run (accepted: concatenate, reads-qc, chloroplast-contamination, genome-mapping) [default:
-                                 concatenate]
-  --output_dir         [string]  Output directory for run [default: results]
   --input_fastq        [string]  Input directory with fastq files to process [default: reads]
+  --input_bam          [string]  Input directory with bam files to analyze [default: bams]
+  --output_dir         [string]  Output directory for run [default: results]
+  --phred_score        [integer] Phred score for reads filtering [default: 7]
   --genome_chl         [string]  Input chloroplast genome for contamination screening
   --genome_nuc         [string]  Input nuclear genome for reads mapping
+  --genes              [string]  Input genes, same reference as nuclear genome for reads mapping
 ``` 
 
 * concatenate: combined multiple ```fastq.gz``` files stored in directory. The name of the final gzip-ed file is the name of the top directory
 * reads-qc: fastqc of each barcode
+* reads-filter: filter reads by phred score
 * chloroplast-contamination: perform chloroplast contamination screening. Final output includes stats
 * genome-mapping: ONT splice mapping on nuclear genome, includes counts analysis
+* isoform-analysis:     
 
 Please use ```test/*``` data to run some examples.    
 Create barcode files:

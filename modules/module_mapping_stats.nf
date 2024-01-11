@@ -2,13 +2,14 @@
 nextflow.enable.dsl=2
 
 outdir           = params.output_dir
+workflow         = params.workflow
 
 process stats_mapping {
 
     label 'stats_mapping'
     tag { 'stats mapping' }
 
-    publishDir "${outdir}/stats/", mode: 'copy', overwrite: true
+    publishDir "${outdir}/alignements/mapping_stats/${workflow}", mode: 'copy', overwrite: true
 
     input:
     tuple val(sample), path(aligned_bam) 
@@ -30,7 +31,7 @@ process run_multiqc_stats {
     label 'multiqc'
     tag { 'multiqc: all' }
 
-    publishDir "${outdir}/stats/", mode: 'copy', overwrite: true
+    publishDir "${outdir}/alignements/mapping_stats/${workflow}", mode: 'copy', overwrite: true
 
     input:
     path(dir)
