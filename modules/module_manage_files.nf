@@ -9,7 +9,7 @@ process concat_barcoded {
 
     label 'small_task'
     tag { "concat barcode: ${barcode}" }
-    publishDir "${outdir}/barcodes_concat/", mode: 'copy', overwrite: true
+    publishDir "${outdir}/barcodes-concat/", mode: 'copy', overwrite: true
 
     input:
     tuple val(barcode), path(barcodes_dir)

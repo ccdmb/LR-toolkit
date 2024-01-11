@@ -10,7 +10,7 @@ process filter_reads {
     label 'small_task'
     tag { "filtering reads: ${sample}" }
 
-    publishDir "${outdir}/filtered_reads/", mode: 'copy', overwrite: true
+    publishDir "${outdir}/filtered-reads/", mode: 'copy', overwrite: true
 
     input:
     tuple val(sample), path(reads)

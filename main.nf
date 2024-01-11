@@ -143,7 +143,7 @@ workflow GENOME_MAPPING {
 				reads)
 
     // Get counts for genes
-    run_feature_counts(mapped_out.alignements, genome_counts, genes)
+    run_feature_counts(mapped_out.minimap_align, genome_counts, genes)
 
     //QC and stats
     stats_out = stats_mapping(mapped_out.minimap_align)
