@@ -10,7 +10,7 @@ process stats_mapping {
     label 'medium_task'
     tag { 'stats mapping' }
 
-    publishDir "${outdir}/alignements/mapping_stats/${workflow}", mode: 'copy', overwrite: true
+    publishDir "${outdir}/alignements/${workflow}/mapping-stats", mode: 'copy', overwrite: true
 
     input:
     tuple val(sample), path(aligned_bam) 
@@ -33,7 +33,7 @@ process run_multiqc_stats {
     label 'multiqc'
     tag { 'multiqc: all' }
 
-    publishDir "${outdir}/alignements/mapping_stats/${workflow}", mode: 'copy', overwrite: true
+    publishDir "${outdir}/alignements/${workflow}/mapping-stats", mode: 'copy', overwrite: true
 
     input:
     path(dir)

@@ -65,7 +65,6 @@ switch (workflow_input) {
 	include { stats_mapping ; run_multiqc_stats } from './modules/module_mapping_stats.nf'
 	include { run_feature_counts } from './modules/module_reads_counts.nf'
 	genome = file(params.genome_nuc)
-	genome_counts = params.genome_nuc
 	genes = file(params.genes)
 	reads = params.input_dir
 	genome = Channel.fromPath("${genome}", checkIfExists: true)
@@ -128,7 +127,6 @@ workflow CHLO_CONTAMINATION {
 workflow GENOME_MAPPING {
     take:
     genome
-    genome_counts
     genes
     reads
 
@@ -143,7 +141,7 @@ workflow GENOME_MAPPING {
 				reads)
 
     // Get counts for genes
-    run_feature_counts(mapped_out.minimap_align, genome_counts, genes)
+    run_feature_counts(mapped_out.minimap_align, genome, genes)
 
     //QC and stats
     stats_out = stats_mapping(mapped_out.minimap_align)
@@ -184,7 +182,7 @@ workflow {
 		CHLO_CONTAMINATION(genome_chl, reads);
                 break;
 	case 5:
-		GENOME_MAPPING(genome, genome_counts, genes, reads);
+		GENOME_MAPPING(genome, genes, reads);
 		break;
 	default:
 		println("Please provide the correct input options")

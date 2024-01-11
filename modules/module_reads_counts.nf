@@ -4,18 +4,18 @@ nextflow.enable.dsl=2
 genome             = params.genome
 genes              = params.genes
 outdir             = params.output_dir
-worflow            = params.workflow
+workflow           = params.workflow
 
 process run_feature_counts {
     time '1d'    
 
     label 'medium_task'
     tag { "featureCounts: ${sample_id}" }
-    publishDir "${outdir}/alignements/${workflow}/counts/featureCounts/${sample_id}", mode: 'copy', overwrite: true
+    publishDir "${outdir}/alignements/${workflow}/counts/featureCounts/${sample_id}", mode: 'copy'
 
     input:
     tuple val(sample_id), path(bam)
-    path(genome)
+    tuple val(genome_id), path(genome)
     path(genes)
 
     output:
@@ -30,6 +30,6 @@ process run_feature_counts {
         -a ${genes} \
         -T ${task.cpus} \
         -o ${sample_id}_counts \
-        $bam
+        ${bam}
     """
 }
