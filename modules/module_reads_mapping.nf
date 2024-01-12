@@ -29,7 +29,7 @@ process minimap_mapping_chlo {
     '''
     time '12h'
 
-    label 'medium_task'
+    label 'big_task'
     tag "minimap mapping: ${sample}"
 
     publishDir "${outdir}/alignements/${workflow}", mode: 'copy'
@@ -70,8 +70,9 @@ process minimap_mapping {
     """
     minimap2 \
 	-ax splice \
-	-d ${genome} \
+	-secondary=no \
 	-t ${task.cpus} \
-	-2 ${reads} -secondary=no | samtools sort -o ${sample}.bam
+	${genome} \
+	${reads} | samtools sort -o ${sample}.bam
     """
 }
