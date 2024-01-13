@@ -21,6 +21,7 @@
             "reads-filter",
             "chloroplast-contamination",
             "genome-mapping",
+	    "genome-mapping-large",
             "isoform-analysis"
           ]
         },

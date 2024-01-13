@@ -60,8 +60,8 @@ switch (workflow_input) {
 	reads = Channel.fromPath("${reads}", checkIfExists: true)
                 .map {[ it.simpleName, it ]}
 	break;
-    case ["genome-mapping"]:
-	include { minimap_mapping;  minimap_create_index } from './modules/module_reads_mapping.nf'
+    case ["genome-mapping", "genome-mapping-large"]:
+	include { minimap_mapping; minimap_mapping_large; minimap_create_index } from './modules/module_reads_mapping.nf'
 	include { stats_mapping ; run_multiqc_stats } from './modules/module_mapping_stats.nf'
 	include { run_feature_counts } from './modules/module_reads_counts.nf'
 	genome = file(params.genome_nuc)
@@ -152,6 +152,34 @@ workflow GENOME_MAPPING {
     run_multiqc_stats(stats)
 }
 
+workflow GENOME_MAPPING_LARGE {
+    take:
+    genome
+    genes
+    reads
+
+    main:
+    // create index and save on disk
+    index = minimap_create_index(genome)
+
+    // map ONT reads
+    mapped_out = minimap_mapping_large(index.
+                                minimap_index
+                                .collect(),
+                                reads)
+
+    // Get counts for genes
+    run_feature_counts(mapped_out.minimap_align, genome, genes)
+   
+    //QC and stats
+    stats_out = stats_mapping(mapped_out.minimap_align)
+    stats_out.stats
+        .map { it -> it[1] }
+        .collect()
+        .set { stats }
+    run_multiqc_stats(stats)
+}
+
 workflow {
 
 	switchVariable = 0
@@ -166,7 +194,9 @@ workflow {
 		switchVariable = 4;
 	} else if (workflow_input == "genome-mapping") {
                 switchVariable = 5;
-        }
+        } else if (workflow_input == "genome-mapping-large") {
+		switchVariable = 6;
+	}
 
 	switch (switchVariable) {
 	case 1:
@@ -184,6 +214,9 @@ workflow {
 	case 5:
 		GENOME_MAPPING(genome, genes, reads);
 		break;
+	case 6:
+		GENOME_MAPPING_LARGE(genome, genes, reads);
+                break;
 	default:
 		println("Please provide the correct input options")
 		break;

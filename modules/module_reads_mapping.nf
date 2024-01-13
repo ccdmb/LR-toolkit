@@ -76,3 +76,31 @@ process minimap_mapping {
 	${reads} | samtools sort -o ${sample}.bam
     """
 }
+
+process minimap_mapping_large {
+    '''
+    Function creates index and maps reads foir large genomes 4Gb
+    '''
+    time '1d'
+    label 'big_task'
+    tag "minimap mapping: ${sample}"
+
+    publishDir "${outdir}/alignements/${workflow}", mode: 'copy'
+
+    input:
+    path(genome)
+    tuple val(sample), path(reads)
+
+    output:
+    tuple val(sample), path("${sample}.bam"), emit: minimap_align
+
+    """
+    minimap2 \
+        -ax splice \
+        -secondary=no \
+	--split-prefix /tmp/temp_ \
+        -t ${task.cpus} \
+        ${genome} \
+        ${reads} | samtools sort -o ${sample}.bam
+    """
+}
