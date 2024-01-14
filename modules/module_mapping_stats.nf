@@ -4,6 +4,8 @@ nextflow.enable.dsl=2
 outdir           = params.output_dir
 workflow         = params.workflow
 
+multiqc_config = "${baseDir}/conf/multiqc/multiqc_config.yaml"
+
 process stats_mapping {
     time '1d'
 
@@ -43,6 +45,6 @@ process run_multiqc_stats {
 
     script:
     """
-    multiqc . --force
+    multiqc --config ${multiqc_config} . --force
     """
 }

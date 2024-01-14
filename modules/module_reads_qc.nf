@@ -3,6 +3,8 @@ nextflow.enable.dsl=2
 
 outdir           = params.output_dir
 
+multiqc_config = "$baseDir/conf/multiqc/multiqc_config.yaml"
+
 process run_fastqc {
     time '1h'
 
@@ -38,7 +40,7 @@ process run_multiqc_reads {
     
     script:
     """
-    multiqc . --force
+    multiqc --config ${multiqc_config} . --force
     """
 }
 
