@@ -24,7 +24,7 @@ Filtering parameters
 * reads-qc: fastqc of each barcode
 * reads-filter: filter reads by phred score
 * chloroplast-contamination: perform chloroplast contamination screening. The final output includes stats
-* genome-mapping: ONT splice mapping on nuclear genome, includes counts analysis
+* genome-mapping: LR splice mapping on nuclear genome, includes counts analysis
 * isoform-analysis:     
 
 Please use ```test/*``` data to run some examples.    
@@ -35,41 +35,41 @@ The input directory is used for all the analysis types. Please remember to use p
 
 Create barcode files:
 ```
-nextflow run ccdm/ONT-toolkit -r main \
+nextflow run ccdm/LR-toolkit -r main \
         -profile local,singularity \
         -resume \
         --input_dir "test/barcode*" \ # barcode* are directories containing fastq.gz files
         --workflow "concatenate" \
 	--output_dir "results" \
-	-with-singularity ont-tools.sif
+	-with-singularity lr-tools.sif
 ```
 
 Perform QC on reads
 ```
-nextflow run ccdm/ONT-toolkit -r main \
+nextflow run ccdm/LR-toolkit -r main \
         -profile local,singularity \
         -resume \
         --input_dir "results/concat_barcoded/barcode*.fastq.gz" \ # input is fastq(.gz) reads. Can be either compressed or uncompressed files
         --workflow "reads-qc" \
         --output_dir "results" \
-	-with-singularity ont-tools.sif
+	-with-singularity lr-tools.sif
 ```
 
 Check the presence of chloroplast sequences      
 ```
-nextflow run ccdm/ONT-toolkit -r main \
+nextflow run ccdm/LR-toolkit -r main \
         -profile local,singularity \
         -resume \
         --input_dir "results/concat_barcoded/barcode*.fastq.gz" \ # input is fastq(.gz) reads. Can be either compressed or uncompressed files
         --workflow "chloroplast-contamination" \
         --output_dir "results" \
 	--genome_chl "/path/to/my/chl/genome.fasta" \
-	-with-singularity ont-tools.sif
+	-with-singularity lr-tools.sif
 ```
 
 Map reads to reference genome    
 ```
-nextflow run ccdm/ONT-toolkit -r main \
+nextflow run ccdm/LR-toolkit -r main \
         -profile local,singularity \
         -resume \
         --input_dir "results/concat_barcoded/barcode*.fastq.gz" \ # input is fastq(.gz) reads. Can be either compressed or uncompressed files
@@ -77,18 +77,18 @@ nextflow run ccdm/ONT-toolkit -r main \
         --output_dir "results" \
         --genome_chl "/path/to/my/nucl/genome.fasta" \
 	--genes "/path/to/my/genes/genes.gtf" \
-	-with-singularity ont-tools.sif
+	-with-singularity lr-tools.sif
 
 ```
 
 Filter reads by phred score
 ```
-nextflow run ccdm/ONT-toolkit -r main \
+nextflow run ccdm/LR-toolkit -r main \
         -profile local,singularity \
         -resume \
         --input_dir "results/concat_barcoded/barcode*.fastq.gz" \ # input is fastq(.gz) reads. Can be either compressed or uncompressed files
         --workflow "reads-filter" \
         --output_dir "results" \
 	--phred_score 10 \
-	-with-singularity ont-tools.sif
+	-with-singularity lr-tools.sif
 ```
