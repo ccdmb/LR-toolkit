@@ -1,4 +1,4 @@
-# ONT-tools - a toolkit for ONT RNAseq data analysis
+# LR-tools - a toolkit for long read RNAseq data analysis
 
 The pipeline performs several analyses that are suitable for barcoded reads.     
 
